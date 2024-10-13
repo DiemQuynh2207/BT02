@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	 <table border="1">
+		<tr>
+			<th>STT</th>
+			<th>Image</th>
+			<th>Category Name</th>
+			<th>Status</th>
+			<th>Action</th>
+		</tr>
+		<c:forEach items="${listResult}" var="cate" varStatus="STT" >
+			<tr>
+				<td>${STT.index+1 }</td>
+				<c:if test="${cate.images.substring(0,5) == 'https' }">
+					<c:url value="${cate.images}" var="imgUrl"></c:url>
+				</c:if>
+				<c:if test="${cate.images.substring(0,5) != 'https' }">
+					<c:url value="/image?fname=${cate.images }" var="imgUrl"></c:url>
+				</c:if>
+				<td><img height="150" width="200" src="${imgUrl}" /></td>
+				<td>${cate.categoryname }</td>
+				<td>${cate.status }</td>
+				<td>
+					<a href="<c:url value='/admin/category/buy?id=${cate.categoryid }'/>">Đặt hàng</a>
+				| 	
+				</td>
+			</tr>
+		</c:forEach>
+	</table>
+	<!-- <h1>Hello this is category-find.jsp</h1> -->
+</body>
+</html>
