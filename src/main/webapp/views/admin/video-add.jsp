@@ -8,7 +8,7 @@
 <title>Insert title here</title> 
 </head>
 <body>
-<form action="<c:url value='/admin/video/insert'></c:url>" method="post">
+<form action="<c:url value='/admin/video/insert'></c:url>" method="post" enctype="multipart/form-data">
   <label for="videoid">Video ID:</label>
   <input type="text" id="videoid" name="videoid" value="${video.videoId}"><br>
   <label for="poster">Poster:</label>

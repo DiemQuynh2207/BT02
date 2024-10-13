@@ -1,17 +1,22 @@
 package controller;
 
+import java.io.File;
+
 import java.io.IOException;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import models.Video;
 import service.IVideoService;
 import service.impl.VideoService;
 
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 @SuppressWarnings("serial")
 @WebServlet (urlPatterns = {"/admin/videos", "/admin/video/edit", "/admin/video/update"
 		,"/admin/video/insert", "/admin/video/add", "/admin/video/delete", "/admin/video/search"})
@@ -62,7 +67,7 @@ public class VideoController extends HttpServlet{
 			String videoid = req.getParameter("videoid");
 			String description = req.getParameter("description");
 			String active = req.getParameter("active");
-			String poster = "https://stcv4.hnammobile.com/downloads/2/goi-y-top-30-bo-phim-tinh-cam-han-quoc-khong-the-bo-qua-41675351263.jpg";
+			String poster = uploadFileImage(req);			
 			String title = req.getParameter("title");
 			String views = req.getParameter("views");
 
@@ -83,7 +88,7 @@ public class VideoController extends HttpServlet{
 			String videoid = req.getParameter("videoid");
 			String description = req.getParameter("description");
 			String active = req.getParameter("active");
-			String poster = "https://stcv4.hnammobile.com/downloads/2/goi-y-top-30-bo-phim-tinh-cam-han-quoc-khong-the-bo-qua-41675351263.jpg";
+			String poster = uploadFileImage(req);
 			String title = req.getParameter("title");
 			String views = req.getParameter("views");
 			
@@ -97,16 +102,41 @@ public class VideoController extends HttpServlet{
 			videoService.insert(video);
 			resp.sendRedirect(req.getContextPath() + "/admin/videos");
 		}
-		/*
-		 * else if(url.contains("/admin/category/search")) {
-		 * System.out.println("test find: "); String name =
-		 * req.getParameter("catesearch"); System.out.println("test catename: ");
-		 * System.out.println(name); List<Category> listResult =
-		 * videoService.findByCategoryname(name); req.setAttribute("listResult",
-		 * listResult);
-		 * req.getRequestDispatcher("/views/admin/category-find.jsp").forward(req,resp);
-		 * }
-		 */
+	}
+	private String getFileName(Part part) {
+		return part.getSubmittedFileName();
+	}
+	public String uploadFileImage(HttpServletRequest request) {
+		System.out.println("đây là số: 1");
+		String uploadPath = getServletContext().getRealPath("") + Constants.UPLOAD_DIRECTORY;
+		File uploadDir = new File(uploadPath);
+		System.out.println("đây là số: 2");
+
+		if (!uploadDir.exists())
+			uploadDir.mkdir();
+		try {
+			String fileName = "";
+			System.out.println("đây là số: 3");
+			Part part = request.getPart("poster");
+			System.out.println("đây là số: 4");
+
+			fileName = getFileName(part);
+			System.out.println("đây là filename trong upload:"+fileName);
+			if (fileName==null || fileName.length() <= 0)
+				return null;
+			System.out.println("write " + fileName+"|");
+			System.out.println(uploadPath);
+			part.write(uploadPath + fileName);
+			request.setAttribute("message", "File " + fileName + " has uploaded successfully!");
+
+			return fileName;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.setAttribute("message", "There was an error: " + e.getMessage());
+
+		}
+		return null;
 	}
 }
 
